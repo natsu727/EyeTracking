@@ -29,6 +29,9 @@ demo_ver2
 	- PC画面サイズの取得
 
 ## 環境構築手順
+
+### ローカルに構築する場合
+*※実行環境: Ubuntu22.04.4LTS*
 1. モデルのダウンロード<br/>
 	上記の[使用するモデル](#使用するモデル)のリンクよりモデルをダウンロードし,`model`ファイルに置く
 2. Anaconda でのパッケージインストール<br/>
@@ -37,3 +40,21 @@ demo_ver2
 	conda env create -n 新しい環境名 -f demo-env.yml
 	```
 	2.が終了したら`python demo_**.py`で動かすことができる
+
+### Dockerで実行する場合（推奨）
+Dockerの環境構築はできているものとします
+1. 	`docker build -t eyetrack .` を実行しイメージをビルドします
+1. 次に`xhost +local:docker` を実行し Dockerから本体（ハードウェア管理サーバ）へのアクセスを行う権限を付与します
+1. 最後に
+	```{iscopy=true}
+	docker run -it --rm \
+    -e DISPLAY=$DISPLAY \
+    -v /tmp/.X11-unix:/tmp/.X11-unix \
+    -v ~/.Xauthority:/root/.Xauthority \
+    --device /dev/video0:/dev/video0 \
+    eyetrack
+	```
+	を実行しコンテナを実行します。<br>
+	ここでは、コンテナ実行時にPC本体のカメラ・ディスプレイに関する情報をマウントしています。
+
+1. 作業終了後必要に応じて`xhost -local:docker`を行いセキュリティ設定をもとに戻してください
