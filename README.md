@@ -30,7 +30,7 @@ demo_ver2
 
 ## 環境構築手順
 
-### ローカルに構築する場合
+### ローカルに構築する場合 ( 非推奨 )
 *※実行環境: Ubuntu22.04.4LTS*
 1. モデルのダウンロード<br/>
 	上記の[使用するモデル](#使用するモデル)のリンクよりモデルをダウンロードし,`model`ファイルに置く
@@ -41,9 +41,12 @@ demo_ver2
 	```
 	2.が終了したら`python demo_**.py`で動かすことができる
 
-### Dockerで実行する場合（推奨）
+### Dockerで実行する場合（ 推奨 ）
 Dockerの環境構築はできているものとします
-1. 	`docker build -t eyetrack .` を実行しイメージをビルドします
+1. 	~~`docker build -t eyetrack .` を実行しイメージをビルドします~~ <br>	 　→ imageファイルを作成しました.　以下を実行してください <br>
+```{iscopy=true}
+sudo docker load < ./.DockerFiles/image.tar
+```
 1. 次に`xhost +local:docker` を実行し Dockerから本体（ハードウェア管理サーバ）へのアクセスを行う権限を付与します
 1. 最後に
 	```{iscopy=true}
