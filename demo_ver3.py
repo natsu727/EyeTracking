@@ -1,13 +1,17 @@
 import dlib
 import cv2
-import pyautogui as pag
+# import pyautogui as pag
 import matplotlib.pyplot as plt
 import numpy as np
 
+# dlibでフェイストラッキングを行うモデルを読み込む
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor("model/shape_predictor_68_face_landmarks.dat")
 
+# カメラ起動
 cap = cv2.VideoCapture(0)
+
+# 瞳の座標を検出する関数
 def eye_point(img, parts, left=True):
 	if left:
 		eyes = [
@@ -29,11 +33,14 @@ def eye_point(img, parts, left=True):
 
 	if is_close(org_y, eyes[2].y):
 		return None
-
+	
+	# 適用的ヒストグラム平坦化　＝＞　顔を検出しやすい用に画像を明るくする
 	clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+	# 明るくした画像をモノクロに変換
 	cl1 = clahe.apply(cv2.cvtColor(img,cv2.COLOR_RGB2GRAY))
+	# 改めて画像全体を平坦化
 	eye = cv2.equalizeHist(cl1)
-	# eye=cl1
+
 	eye = eye[org_y:eyes[2].y, org_x:eyes[-1].x]
 	_, eye = cv2.threshold(eye, 30, 255, cv2.THRESH_BINARY_INV)
 	
@@ -45,6 +52,7 @@ def eye_point(img, parts, left=True):
 		return center[0] + org_x, center[1] + org_y , avgX,avgY
 	return center , avgX ,avgY
 
+# 瞳の中心座標を取得する関数
 def get_center(gray_img):
 	moments = cv2.moments(gray_img, False)
 	try:
@@ -52,11 +60,13 @@ def get_center(gray_img):
 	except:
 		return None
 
+# 目が閉じていることを確認する関数
 def is_close(y0, y1):
 	if abs(y0 - y1) < 10:
 		return True
 	return False
 
+# 瞳座標にポイントを描画する関数
 def p(img, parts, eye):
 	if eye[0]:
 		cv2.circle(img, eye[0][0:2], 3, (255,255,0), -1)
@@ -65,16 +75,24 @@ def p(img, parts, eye):
 
 	cv2.imshow("me", img)
 
+# キャリブレーション
 pos_x=[]
 pos_y=[]
+
+# キャリブレーションが完了してるかどうかを示すブール
 flame_state=False
+
+# 前5フレーム分の座標を保存する
 prev_x=[]
 prev_y=[]
 while True:
+
 	ret, frame = cap.read()
 	frame= cv2.flip(frame,1)
 	dets = detector(frame[:,:,::-1])
+
 	if len(dets) > 0:
+
 		parts = predictor(frame, dets[0]).parts()
 		left_eye = eye_point(frame, parts)
 		right_eye = eye_point(frame, parts, False)
@@ -88,6 +106,8 @@ while True:
 			posY = (left_eye[1]+right_eye[1])/2
 
 			if baseX-posX > min(pos_x) and baseX-posX<max(pos_x) and baseY-posY>min(pos_y) and baseY-posY<max(pos_y):
+				
+				# matplotlibで仮のモニターとしてグラフに枠線描画
 				plt.cla()
 				minX=min(pos_x)
 				minY=min(pos_y)
@@ -110,6 +130,8 @@ while True:
 					# if sum(prev_x)/len(prev_x) > 1.0 or sum(prev_y)/len(prev_y) > 1.0:
 						# plt.scatter(baseX-posX,baseY-posY,marker=".")
 					# if sum(prev_x)/len(prev_x) >1.5 or sum(prev_y)/len(prev_y) > 0.8:
+					
+					# 5フレーム分の平均座標を算出しグラフに描画する
 					before_avg_x = sum(prev_x)/len(prev_x)
 					after_avg_x = sum(prev_x)+baseX-posX/len(prev_x)+1
 					before_avg_y = sum(prev_y)/len(prev_y)
@@ -132,7 +154,7 @@ while True:
 		print(left_eye,end=" ")
 		print("右目 : ",end="")
 		print(right_eye)
-		if not flame_state and left_eye !=None and right_eye !=None:
+		if not flame_state and left_eye !=None and right_eye !=None and flame_state == False:
 			if len(pos_x)<4:
 				baseX = (left_eye[2] + right_eye[2])/2
 				baseY = (left_eye[3] + right_eye[3])/2
@@ -140,8 +162,9 @@ while True:
 				centerY=(left_eye[1]+right_eye[1])/2
 				pos_x.append(baseX-centerX)
 				pos_y.append(baseY-centerY)	
-			elif len(pos_x)==4	:
-				flame_state=True
+				if len(pos_x)==4 :
+					 flame_state=True
+
 	if cv2.waitKey(1) == ord('q'):
 		break
 
