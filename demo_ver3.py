@@ -49,26 +49,22 @@ def eye_point(img, parts, left=True):
 	avgX = (eyes[0].x +eyes[1].x +eyes[2].x+eyes[3].x)/4
 	avgY = (eyes[0].y +eyes[1].y +eyes[2].y+eyes[3].y)/4
 	if center:
-		return center[0] + org_x, center[1] + org_y , avgX,avgY
-	return center , avgX ,avgY
+		return center[0] + org_x, center[1] + org_y , avgX,avgY , eyes[1].y , eyes[2].y
+	
+	return center , avgX ,avgY , eyes[1].y , eyes[2].y
 
 # 瞳の中心座標を取得する関数
 def get_center(gray_img):
 	moments = cv2.moments(gray_img, False)
 	try:
+		#黒目の中心
 		return int(moments['m10'] / moments['m00']), int(moments['m01'] / moments['m00'])
 	except:
 		return 
 
 # 目が閉じていることを確認する関数
 def is_close(y0, y1):
-	count=0
 	if abs(y0 - y1) < 10:
-		count+=1
-
-		if count==2:
-			return print('enter')
-
 		return True
 	return False
 
@@ -81,6 +77,13 @@ def p(img, parts, eye):
 
 	cv2.imshow("me", img)
 
+def is_wink(left_eye,right_eye):
+
+	if left_eye and None not in left_eye[4:6]:
+		print("left_eye : "+ str(left_eye[4:6]))
+	if right_eye and None not in right_eye[4:6]:
+		print("right_eye"+str(right_eye[4:6]))
+
 # キャリブレーション
 pos_x=[]
 pos_y=[]
@@ -91,6 +94,7 @@ flame_state=False
 # 前5フレーム分の座標を保存する
 prev_x=[]
 prev_y=[]
+
 while True:
 
 	ret, frame = cap.read()
@@ -107,6 +111,8 @@ while True:
 		# ここに left_eye と right_eye を引数として動く関数を追加したら良さそう
 		# 例：
 		#　checkWink(left_eye,right_eye)
+		
+		is_wink(left_eye,right_eye)
 		
 		if flame_state and left_eye != None and right_eye != None:
 
@@ -146,6 +152,11 @@ while True:
 					after_avg_x = sum(prev_x)+baseX-posX/len(prev_x)+1
 					before_avg_y = sum(prev_y)/len(prev_y)
 					after_avg_y = sum(prev_y)+baseY-posY/len(prev_y)+1
+
+
+
+
+
 					if before_avg_x-after_avg_x > 0.15 or before_avg_x-after_avg_x < -0.15 or before_avg_y-after_avg_y > 0.15 or before_avg_y-after_avg_y < -0.15 :
 						prev_x.append(baseX-posX)
 						prev_y.append(baseY-posY)
