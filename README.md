@@ -43,14 +43,14 @@ demo_ver2
 
 ### Dockerで実行する場合（ 推奨 ）
 Dockerの環境構築はできているものとします
-1. 	~~`docker build -t eyetrack .` を実行しイメージをビルドします~~ <br>	 　→ imageファイルを作成しました.　以下を実行してください <br>
+1. 	`docker build -t eyetrack .` を実行しイメージをビルドします<br>	 　→ imageファイルを作成しました.　以下を実行してください <br>
 ```{iscopy=true}
 sudo docker load < ./.DockerFiles/image.tar
 ```
 1. 次に`xhost +local:docker` を実行し Dockerから本体（ハードウェア管理サーバ）へのアクセスを行う権限を付与します
 1. 最後に
 	```{iscopy=true}
-	docker run -it --rm \
+	sudo docker run -it --rm \
     -e DISPLAY=$DISPLAY \
     -v /tmp/.X11-unix:/tmp/.X11-unix \
     -v ~/.Xauthority:/root/.Xauthority \
@@ -61,3 +61,11 @@ sudo docker load < ./.DockerFiles/image.tar
 	ここでは、コンテナ実行時にPC本体のカメラ・ディスプレイに関する情報をマウントしています。
 
 1. 作業終了後必要に応じて`xhost -local:docker`を行いセキュリティ設定をもとに戻してください
+
+
+---
+
+11月25----追記
+
+- ローカルのコードを編集したあとは、必ず `sudo docker build -t eyetrack .`を実行してdocker環境内に変更したファイルをCOPYするようにしてください。
+- docker環境から出るには`exit`で出ることができます。
