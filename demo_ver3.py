@@ -58,19 +58,25 @@ def get_center(gray_img):
 	try:
 		return int(moments['m10'] / moments['m00']), int(moments['m01'] / moments['m00'])
 	except:
-		return None
+		return 
 
 # 目が閉じていることを確認する関数
 def is_close(y0, y1):
+	count=0
 	if abs(y0 - y1) < 10:
+		count+=1
+
+		if count==2:
+			return print('enter')
+
 		return True
 	return False
 
 # 瞳座標にポイントを描画する関数
 def p(img, parts, eye):
-	if eye[0]:
+	if eye[0] and None not in eye[0][0:2]:
 		cv2.circle(img, eye[0][0:2], 3, (255,255,0), -1)
-	if eye[1]:
+	if eye[1] and None not in eye[1][0:2]:
 		cv2.circle(img, eye[1][0:2], 3, (255,255,0), -1)
 
 	cv2.imshow("me", img)
