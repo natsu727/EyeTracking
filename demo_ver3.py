@@ -77,12 +77,45 @@ def p(img, parts, eye):
 
 	cv2.imshow("me", img)
 
-def is_wink(left_eye,right_eye):
 
-	if left_eye and None not in left_eye[4:6]:
-		print("left_eye : "+ str(left_eye[4:6]))
-	if right_eye and None not in right_eye[4:6]:
-		print("right_eye"+str(right_eye[4:6]))
+#ウィンク判定のためのやつ
+
+count=0
+box=[]
+def is_wink(left_eye,right_eye):
+	global count
+	if left_eye and (None not in left_eye[4:6]) and right_eye and (None not in right_eye[4:6]):
+		left_local = left_eye[4:6]
+		right_local = right_eye[4:6]
+
+		# box.append(left_eye[5]-left_eye[4])
+		# if len(box) == 10:
+		# 	a=0
+		# 	for i in box:
+		# 		a+=abs(i)
+		# 	print(a/len(box))
+		
+		if abs(left_local[1] - left_local[0]) < 10 and abs(right_local[1] - right_local[0]) >10:
+			if count>5:
+				print('左目閉じてるウィンク')
+				print("left_local : "+ str(left_local))
+				print(left_local[1])
+				print("right_local :"+str(right_local))
+				print(right_local[1])
+			count+=1
+				
+			
+		elif abs(left_local[1] - left_local[0]) >10 and abs(right_local[1] - right_local[0]) <10:
+		# elif len(right_local) == 1 :
+			if count>5:
+				print('右目閉じてるウィンク')
+				print("left_local : "+ str(left_local))
+				print("right_local :"+str(right_local))
+			count+=1
+		else:
+			count=0
+			
+
 
 # キャリブレーション
 pos_x=[]
@@ -94,6 +127,15 @@ flame_state=False
 # 前5フレーム分の座標を保存する
 prev_x=[]
 prev_y=[]
+
+
+
+
+
+
+
+
+
 
 while True:
 
@@ -111,8 +153,12 @@ while True:
 		# ここに left_eye と right_eye を引数として動く関数を追加したら良さそう
 		# 例：
 		#　checkWink(left_eye,right_eye)
+		#ウィンクのやつ
 		
 		is_wink(left_eye,right_eye)
+		
+			
+		
 		
 		if flame_state and left_eye != None and right_eye != None:
 
@@ -153,6 +199,7 @@ while True:
 					before_avg_y = sum(prev_y)/len(prev_y)
 					after_avg_y = sum(prev_y)+baseY-posY/len(prev_y)+1
 
+					
 
 
 
