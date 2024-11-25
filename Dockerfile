@@ -16,5 +16,5 @@ RUN python3 -m pip install opencv-python
 RUN pip install dlib
 RUN pip install matplotlib==3.7.3
 RUN pip install pyautogui==0.9.54
-
+RUN pip install imutils
 COPY ./ /home/
