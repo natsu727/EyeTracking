@@ -103,7 +103,11 @@ while True:
 		left_eye = eye_point(frame, parts)
 		right_eye = eye_point(frame, parts, False)
 		p(frame, parts, (left_eye, right_eye))
-
+		
+		# ここに left_eye と right_eye を引数として動く関数を追加したら良さそう
+		# 例：
+		#　checkWink(left_eye,right_eye)
+		
 		if flame_state and left_eye != None and right_eye != None:
 
 			baseX = (left_eye[2] + right_eye[2])/2
