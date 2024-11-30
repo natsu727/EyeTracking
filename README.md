@@ -12,6 +12,8 @@ demo_ver2
 - [dlibとopencvを使って画像から瞳の位置を取得【python】](https://cppx.hatenablog.com/entry/2017/12/25/231121)
 - [ctare/face_expr](https://github.com/ctare/face_expr/blob/master/main.py)
 
+- [PythonとOpenCV+dlibを用いた頭部方向推定](https://qiita.com/oozzZZZZ/items/1e68a7572bc5736d474e)
+
 ## 使用しているパッケージ・ライブラリ
 - OpenCV 
 	- Webカメラの取得、及び画像処理用
@@ -27,7 +29,8 @@ demo_ver2
 	- 取得した座標等の可視化
 - pyautogui
 	- PC画面サイズの取得
-
+- imutils
+	- OpenCVの補助
 ## 環境構築手順
 
 ### ローカルに構築する場合 ( 非推奨 )
@@ -65,7 +68,8 @@ sudo docker load < ./.DockerFiles/image.tar
 
 ---
 
-11月25----追記
+#### 追記 11月25日 
 
+---
 - ローカルのコードを編集したあとは、必ず `sudo docker build -t eyetrack .`を実行してdocker環境内に変更したファイルをCOPYするようにしてください。
 - docker環境から出るには`exit`で出ることができます。
